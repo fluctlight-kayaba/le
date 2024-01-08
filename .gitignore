@@ -1,2 +1,7 @@
 zig-cache
 zig-out
+
+.yarn/cache
+.yarn/install-state.gz
+
+node_modules
