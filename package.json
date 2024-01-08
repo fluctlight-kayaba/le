@@ -1,13 +1,19 @@
 {
   "name": "le",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "module": "index.ts",
+  "type": "module",
   "scripts": {
-    "repl": "./modules/hermes/build/bin/hermes script/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "bun build ./script/index.tsx --outdir ./target/script",
+    "watch": "npx nodemon --watch src,script -e rs --exec 'bun run build && cargo run'"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "devDependencies": {
+    "@types/react": "^18.2.47",
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "react": "^18.2.0"
+  }
 }

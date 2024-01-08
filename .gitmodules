@@ -1,3 +1,0 @@
-[submodule "libs/v8"]
-	path = libs/v8
-	url = https://github.com/fubark/zig-v8.git
