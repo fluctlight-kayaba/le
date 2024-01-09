@@ -11,6 +11,15 @@ fn main() {
 		let handle_scope = &mut v8::HandleScope::new(isolate);
 		let context = v8::Context::new(handle_scope);
 		let scope = &mut v8::ContextScope::new(handle_scope, context);
+
+		let object_template = v8::ObjectTemplate::new(scope);
+		let function_template = v8::FunctionTemplate::new(scope, print);
+		let name = v8::String::new(scope, "print").unwrap();
+
+		object_template.set(name.into(), function_template.into());
+		let context = v8::Context::new_from_template(scope, object_template);
+		let scope = &mut v8::ContextScope::new(scope, context);
+
 		let source =
 			fs::read_to_string("target/script/index.js").expect("Could not scripting read source code");
 		let code = v8::String::new(scope, &source).unwrap();
@@ -27,4 +36,18 @@ fn main() {
 	}
 
 	v8::V8::shutdown_platform();
+}
+
+fn print(
+	scope: &mut v8::HandleScope,
+	args: v8::FunctionCallbackArguments,
+	mut _rv: v8::ReturnValue,
+) {
+	let result = args
+		.get(0)
+		.to_string(scope)
+		.unwrap()
+		.to_rust_string_lossy(scope);
+
+	println!("print: {}", result);
 }
