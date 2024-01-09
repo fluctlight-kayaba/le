@@ -1,7 +1,10 @@
-zig-cache
-zig-out
-
+.DS_Store
 .yarn/cache
 .yarn/install-state.gz
 
 node_modules
+metacraft
+
+zig-cache
+zig-out
+target
