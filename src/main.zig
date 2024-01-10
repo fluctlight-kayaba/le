@@ -36,7 +36,13 @@ export fn sayHello() void {
     var global_object: js.JSObjectRef = js.JSContextGetGlobalObject(global_context);
     var log_function_name: js.JSStringRef = js.JSStringCreateWithUTF8CString("log"[0.. :0]);
     var function: js.JSObjectRef = js.JSObjectMakeFunctionWithCallback(global_context, log_function_name, logFromJavascript);
-    var log_call_statement: js.JSStringRef = js.JSStringCreateWithUTF8CString("log('Hello ' + 5 * 2 + ' from JavaScript inside Zig');"[0.. :0]);
+
+    var file = try std.fs.cwd().openFile("script/index.js", .{});
+    defer file.close();
+    var buffer: [1024 * 4]u8 = undefined;
+    const bytes_read = try file.read(buffer[0..buffer.len]);
+
+    var log_call_statement: js.JSStringRef = js.JSStringCreateWithUTF8CString(buffer[0..bytes_read]);
     js.JSObjectSetProperty(global_context, global_object, log_function_name, function, js.kJSPropertyAttributeNone, null);
     const ret = js.JSEvaluateScript(global_context, log_call_statement, null, null, 1, null);
     _ = ret;
@@ -48,12 +54,7 @@ export fn sayHello() void {
 }
 
 pub fn main() !void {
-    // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
     std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
-
-    // stdout is for the actual output of your application, for example if you
-    // are implementing gzip, then only the compressed bytes should be sent to
-    // stdout, not any debugging messages.
     const stdout_file = std.io.getStdOut().writer();
     var bw = std.io.bufferedWriter(stdout_file);
     const stdout = bw.writer();
@@ -62,12 +63,12 @@ pub fn main() !void {
 
     sayHello();
 
-    try bw.flush(); // don't forget to flush!
+    try bw.flush();
 }
 
 test "simple test" {
     var list = std.ArrayList(i32).init(std.testing.allocator);
-    defer list.deinit(); // try commenting this out and see if zig detects the memory leak!
+    defer list.deinit();
     try list.append(42);
     try std.testing.expectEqual(@as(i32, 42), list.pop());
 }
