@@ -1,19 +1,22 @@
 {
   "name": "le",
-  "module": "index.ts",
-  "type": "module",
   "scripts": {
     "build": "bun build ./script/index.tsx --outdir ./target/script",
-    "watch": "npx nodemon --watch src,script -e rs --exec 'bun run build && cargo run'"
+    "watch": "npx nodemon"
   },
   "devDependencies": {
     "@types/react": "^18.2.47",
-    "bun-types": "latest"
+    "@types/react-dom": "^18.2.18",
+    "@types/react-reconciler": "^0.28.8",
+    "@walless/tsconfig": "^0.0.1",
+    "bun-types": "latest",
+    "react-dom": "^18.2.0"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "react": "^18.2.0"
+    "react": "^18.2.0",
+    "react-reconciler": "^0.29.0"
   }
 }

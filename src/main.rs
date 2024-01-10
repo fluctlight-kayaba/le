@@ -12,12 +12,17 @@ fn main() {
 		let context = v8::Context::new(handle_scope);
 		let scope = &mut v8::ContextScope::new(handle_scope, context);
 
-		let object_template = v8::ObjectTemplate::new(scope);
-		let function_template = v8::FunctionTemplate::new(scope, print);
-		let name = v8::String::new(scope, "print").unwrap();
+		let global_object = v8::ObjectTemplate::new(scope);
+		let console_object = v8::ObjectTemplate::new(scope);
+		let log_function = v8::FunctionTemplate::new(scope, log);
+		let console_str = v8::String::new(scope, "konsole").unwrap();
+		let log_str = v8::String::new(scope, "log").unwrap();
 
-		object_template.set(name.into(), function_template.into());
-		let context = v8::Context::new_from_template(scope, object_template);
+		console_object.set(log_str.into(), log_function.into());
+		global_object.set(console_str.into(), console_object.into());
+		global_object.set(log_str.into(), log_function.into());
+
+		let context = v8::Context::new_from_template(scope, global_object);
 		let scope = &mut v8::ContextScope::new(scope, context);
 
 		let source =
@@ -38,11 +43,7 @@ fn main() {
 	v8::V8::shutdown_platform();
 }
 
-fn print(
-	scope: &mut v8::HandleScope,
-	args: v8::FunctionCallbackArguments,
-	mut _rv: v8::ReturnValue,
-) {
+fn log(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, mut _rv: v8::ReturnValue) {
 	let result = args
 		.get(0)
 		.to_string(scope)

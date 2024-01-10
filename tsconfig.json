@@ -1,22 +1,39 @@
 {
+  "extends": "@walless/tsconfig/application.json",
+  "include": [
+    "script",
+    "../../globals.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
   "compilerOptions": {
-    "lib": ["ESNext"],
-    "module": "esnext",
-    "target": "esnext",
-    "moduleResolution": "bundler",
-    "moduleDetection": "force",
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "composite": true,
-    "strict": true,
-    "downlevelIteration": true,
-    "skipLibCheck": true,
-    "jsx": "react-jsx",
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "allowJs": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "module": "ESNext",
+    "lib": [
+      "DOM",
+      "ES2015",
+      "WebWorker"
+    ],
     "types": [
-      "bun-types" // add Bun global
-    ]
+      "chrome"
+    ],
+    "typeRoots": [
+      "node_modules/@types",
+      "../../node_modules/@types"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "components/*": [
+        "./script/components/*"
+      ],
+      "utils/*": [
+        "./script/utils/*"
+      ],
+      "state/*": [
+        "./script/state/*"
+      ]
+    }
   }
 }
