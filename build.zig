@@ -5,19 +5,19 @@ pub fn build(b: *std.Build) void {
 
     const optimize = b.standardOptimizeOption(.{});
 
-    const hermes = b.addStaticLibrary(.{
-        .name = "hermes",
-        .target = target,
-        .optimize = optimize,
-        .link_libc = true,
-    });
+    // const hermes = b.addStaticLibrary(.{
+    //     .name = "hermes",
+    //     .target = target,
+    //     .optimize = optimize,
+    //     .link_libc = true,
+    // });
 
-    hermes.addIncludePath(.{ .path = "modules/hermes/include/" });
-    hermes.addIncludePath(.{ .path = "modules/hermes/public/" });
-    hermes.addIncludePath(.{ .path = "modules/hermes/external/llvh/include/" });
-    hermes.addIncludePath(.{ .path = "modules/hermes/API/jsi/" });
-    hermes.linkLibCpp();
-    hermes.addCSourceFiles(&.{"modules/hermes/API/hermes/hermes.cpp"}, &.{});
+    // hermes.addIncludePath(.{ .path = "modules/hermes/include/" });
+    // hermes.addIncludePath(.{ .path = "modules/hermes/public/" });
+    // hermes.addIncludePath(.{ .path = "modules/hermes/external/llvh/include/" });
+    // hermes.addIncludePath(.{ .path = "modules/hermes/API/jsi/" });
+    // hermes.linkLibCpp();
+    // hermes.addCSourceFiles(&.{"modules/hermes/API/hermes/hermes.cpp"}, &.{});
 
     const exe = b.addExecutable(.{
         .name = "le",
@@ -26,13 +26,15 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    exe.addIncludePath(.{ .path = "modules/hermes/include/" });
-    exe.addIncludePath(.{ .path = "modules/hermes/public/" });
-    exe.addIncludePath(.{ .path = "modules/hermes/external/llvh/include/" });
-    exe.addIncludePath(.{ .path = "modules/hermes/API/jsi/" });
-    exe.linkLibCpp();
-    exe.linkLibrary(hermes);
-    exe.addCSourceFiles(&.{"modules/hermes/API/hermes/hermes.cpp"}, &.{});
+    // exe.addIncludePath(.{ .path = "modules/hermes/include/" });
+    // exe.addIncludePath(.{ .path = "modules/hermes/public/" });
+    // exe.addIncludePath(.{ .path = "modules/hermes/external/llvh/include/" });
+    // exe.addIncludePath(.{ .path = "modules/hermes/API/jsi/" });
+    // exe.linkLibrary(hermes);
+    // exe.addCSourceFiles(&.{"modules/hermes/API/hermes/hermes.cpp"}, &.{});
+    exe.linkLibC();
+    exe.linkFramework("JavascriptCore");
+    exe.linkFramework("System");
 
     b.installArtifact(exe);
 
