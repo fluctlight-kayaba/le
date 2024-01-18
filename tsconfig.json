@@ -1,0 +1,39 @@
+{
+  "extends": "@walless/tsconfig/application.json",
+  "include": [
+    "script",
+    "../../globals.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "module": "ESNext",
+    "lib": [
+      "DOM",
+      "ES2015",
+      "WebWorker"
+    ],
+    "types": [
+      "chrome"
+    ],
+    "typeRoots": [
+      "node_modules/@types",
+      "../../node_modules/@types"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "components/*": [
+        "./script/components/*"
+      ],
+      "utils/*": [
+        "./script/utils/*"
+      ],
+      "state/*": [
+        "./script/state/*"
+      ]
+    }
+  }
+}
