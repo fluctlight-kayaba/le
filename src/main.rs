@@ -1,54 +1,58 @@
-use rusty_v8 as v8;
 use std::fs;
 
-fn main() {
-	let platform = v8::new_default_platform(0, false).make_shared();
-	v8::V8::initialize_platform(platform);
-	v8::V8::initialize();
+use rusty_jsc::{JSContext, JSValue};
+use rusty_jsc_macros::callback;
 
-	{
-		let isolate = &mut v8::Isolate::new(v8::CreateParams::default());
-		let handle_scope = &mut v8::HandleScope::new(isolate);
-		let context = v8::Context::new(handle_scope);
-		let scope = &mut v8::ContextScope::new(handle_scope, context);
-
-		let global_object = v8::ObjectTemplate::new(scope);
-		let console_object = v8::ObjectTemplate::new(scope);
-		let log_function = v8::FunctionTemplate::new(scope, log);
-		let console_str = v8::String::new(scope, "konsole").unwrap();
-		let log_str = v8::String::new(scope, "log").unwrap();
-
-		console_object.set(log_str.into(), log_function.into());
-		global_object.set(console_str.into(), console_object.into());
-		global_object.set(log_str.into(), log_function.into());
-
-		let context = v8::Context::new_from_template(scope, global_object);
-		let scope = &mut v8::ContextScope::new(scope, context);
-
-		let source =
-			fs::read_to_string("target/script/index.js").expect("Could not scripting read source code");
-		let code = v8::String::new(scope, &source).unwrap();
-
-		let script = v8::Script::compile(scope, code, None).unwrap();
-		let result = script.run(scope).unwrap();
-		let result = result.to_string(scope).unwrap();
-
-		println!("{}", result.to_rust_string_lossy(scope));
+#[callback]
+fn log(ctx: JSContext, _function: _, _this: _, args: &[JSValue]) -> Result<JSValue, JSValue> {
+	for i in 0..args.len() {
+		print!("{} ", args[i].to_string(&ctx).unwrap());
 	}
-
-	unsafe {
-		v8::V8::dispose();
-	}
-
-	v8::V8::shutdown_platform();
+	println!("");
+	Ok(JSValue::undefined(&ctx))
 }
 
-fn log(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, mut _rv: v8::ReturnValue) {
-	let result = args
-		.get(0)
-		.to_string(scope)
+#[callback]
+fn set_timeout(
+	ctx: JSContext,
+	_function: _,
+	_this: _,
+	args: &[JSValue],
+) -> Result<JSValue, JSValue> {
+	let callback_function = args[0]
+		.to_object(&ctx)
 		.unwrap()
-		.to_rust_string_lossy(scope);
+		.call(&ctx, None, &[JSValue::string(&ctx, "Tom")])
+		.unwrap();
 
-	println!("print: {}", result);
+	Ok(callback_function)
+}
+
+#[tokio::main]
+async fn main() {
+	let js_source_code = fs::read_to_string("target/script/index.js")
+		.expect("Could not read scripting source code, consider run [bun build] command generate!");
+
+	let mut context = JSContext::default();
+	let log_callback = JSValue::callback(&context, Some(log));
+	let timeout_callback = JSValue::callback(&context, Some(set_timeout));
+	let global = context.get_global_object();
+	let console = global
+		.get_property(&context, "console")
+		.to_object(&context)
+		.unwrap();
+
+	global
+		.set_property(&context, "setTimeout", timeout_callback)
+		.unwrap();
+	console.set_property(&context, "log", log_callback).unwrap();
+
+	match context.evaluate_script(&js_source_code, 1) {
+		Ok(value) => {
+			println!("{}", value.to_string(&context).unwrap());
+		}
+		Err(e) => {
+			println!("Uncaught: {}", e.to_string(&context).unwrap())
+		}
+	}
 }
