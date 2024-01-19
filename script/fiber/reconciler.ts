@@ -1,8 +1,8 @@
 import type { ReactElement }	from 'react';
 import createReconciler from 'react-reconciler';
 
-const appendChildNode = () => {
-	console.log('appending..')
+const appendChildNode = (args) => {
+	console.log('appending..', JSON.stringify(args))
 };
 
 export const reconciler = createReconciler({

@@ -1,27 +1,18 @@
-import { render }	from './renderer';
-// import type { FC }	from 'react';
-// import { useRef }  from 'react';
-// log(konsole.log)
-//
-console.log = log as never;
+import type { FC }	from 'react';
+import { useEffect, useRef }  from 'react';
 
-// const add = (a: number, b: number) => {
-//   return a + b;
-// };
-
-// for (let i = 0; i < 5; i ++) {
-// 	console.log(i);
-// }
+import { render }	from './fiber';
 
 const App: FC = () => {
-	const ref = useRef<number>(0); 
+	const counterRef = useRef<number>(0); 
+
+  useEffect(() => {
+    console.log(counterRef.current, '<-- counterRef');
+  }, []);
 
 	return <div>
 		<h1>hmm</h1>
 	</div>
 }
 
-console.log(render(App, null));
-
-// console.log(JSON.stringify(<App />));
-// add(10, 12);
+render(<App />, null);

@@ -1,8 +1,8 @@
 {
   "name": "le",
   "scripts": {
-    "build": "bun build ./script/index.tsx --outdir ./target/script",
-    "watch": "npx nodemon"
+    "dev": "npx nodemon",
+    "build": "bun build ./script/index.tsx --outdir ./target/script"
   },
   "devDependencies": {
     "@types/react": "^18.2.47",
